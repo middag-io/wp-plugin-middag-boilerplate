@@ -8,6 +8,8 @@ use Middag\Framework\Kernel\ContainerFactory;
 use Middag\Framework\Kernel\Contract\HostComponentContextInterface;
 use Middag\Framework\Kernel\HostContext;
 use Middag\Framework\Translation\Contract\TranslatorInterface;
+use Middag\WordPress\Admin\AdminRouteRegistrar;
+use Middag\WordPress\Admin\MenuPage;
 use Middag\WordPress\Cron\CronHandler;
 use Middag\WordPress\Cron\CronRegistrar;
 use Middag\WordPress\Cron\Enum\CronInterval;
@@ -15,10 +17,14 @@ use Middag\WordPress\Database\WpdbConnectionAdapter;
 use Middag\WordPress\Definition\DefinitionRegistrar;
 use Middag\WordPress\Definition\PostTypeDefinition;
 use Middag\WordPress\Hook\HookRegistrar;
+use Middag\WordPress\Http\Inertia\InertiaAdapter;
 use Middag\WordPress\Http\Routing\RestRouteRegistrar;
+use Middag\WordPress\Http\Routing\Router;
 use Middag\WordPress\Runtime\WpComponentContext;
+use Middag\WordPress\Security\Enum\WpCapability;
 use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Domain\Widget\SyncWidgetsService;
+use Middag\WpBoilerplate\UI\WidgetPageController;
 use Middag\WpBoilerplate\WordPress\Schema\SchemaInstaller;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -65,7 +71,7 @@ final class Plugin
 
         self::$container = $factory->build(new AppBootstrap($projectRoot), [], $projectRoot);
 
-        self::registerHooks(self::$container, $context);
+        self::registerHooks(self::$container, $context, plugin_dir_url($pluginFile) . 'assets/dist/');
     }
 
     public static function container(): ?ContainerBuilder
@@ -79,7 +85,7 @@ final class Plugin
      * Grows one subsystem at a time as the layers land (REST route registrar,
      * admin route registrar, cron, settings page, CPT, hook registrar).
      */
-    private static function registerHooks(ContainerBuilder $container, HostComponentContextInterface $context): void
+    private static function registerHooks(ContainerBuilder $container, HostComponentContextInterface $context, string $assetsBaseUrl): void
     {
         $hookDir = rtrim((string) $context->basePath(), '/\\') . '/src/WordPress/Hook';
 
@@ -120,6 +126,53 @@ final class Plugin
             $registrar = new RestRouteRegistrar($container, $context);
             $registrar->addController(WidgetController::class);
             $registrar->register();
+        });
+
+        if (is_admin()) {
+            self::registerAdmin($container, $context, $assetsBaseUrl);
+        }
+    }
+
+    /**
+     * Wire the Inertia admin surface: one menu page whose routes dispatch to the
+     * page controller, plus the asset enqueue gated on the page hook suffix.
+     */
+    private static function registerAdmin(ContainerBuilder $container, HostComponentContextInterface $context, string $assetsBaseUrl): void
+    {
+        $router = new Router();
+        $router->get('/', [WidgetPageController::class, 'index']);
+        $router->post('/widgets', [WidgetPageController::class, 'store']);
+
+        $admin = new AdminRouteRegistrar(
+            $context,
+            $router,
+            $container,
+            static function (string $page, string $path): void {},
+        );
+
+        $menu = new MenuPage(
+            'MIDDAG Boilerplate',
+            'MIDDAG Boilerplate',
+            WpCapability::ManageOptions,
+            'dashicons-screenoptions',
+        );
+
+        add_action('admin_menu', static function () use ($admin, $menu): void {
+            $admin->register($menu, []);
+        });
+        add_action('admin_init', [$admin, 'handleInertiaRequest']);
+        add_action('admin_enqueue_scripts', static function (string $hookSuffix) use ($admin, $container, $assetsBaseUrl): void {
+            if (!in_array($hookSuffix, $admin->pageHookSuffixes(), true)) {
+                return;
+            }
+
+            /** @var InertiaAdapter $inertia */
+            $inertia = $container->get(InertiaAdapter::class);
+            $inertia->enqueueAssets(
+                'middag-boilerplate',
+                $assetsBaseUrl . 'app.js',
+                $assetsBaseUrl . 'style.css',
+            );
         });
     }
 

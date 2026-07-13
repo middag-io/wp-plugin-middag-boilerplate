@@ -10,6 +10,7 @@ use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Core\AppBootstrap;
 use Middag\WpBoilerplate\Domain\Widget\Contract\WidgetRepositoryInterface;
 use Middag\WpBoilerplate\Domain\Widget\WidgetService;
+use Middag\WpBoilerplate\UI\WidgetPageController;
 use Middag\WpBoilerplate\WordPress\Repository\WidgetRepository;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -43,6 +44,9 @@ final class ContainerBootTest extends TestCase
 
         // The REST controller autowired its authenticator + domain service.
         self::assertTrue($container->has(WidgetController::class), 'WidgetController discovered + autowired');
+
+        // The admin page controller autowired the Inertia adapter + domain service.
+        self::assertTrue($container->has(WidgetPageController::class), 'WidgetPageController discovered + autowired');
     }
 
     private function context(): HostComponentContextInterface
