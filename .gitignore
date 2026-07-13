@@ -1,0 +1,25 @@
+# Composer
+/vendor/
+/vendor-prefixed/
+
+# Node / UI build
+/ui/node_modules/
+/node_modules/
+
+# Build output (assets/dist keeps its dir via assets/dist/.gitignore)
+/assets/dist/*
+
+# Env / local
+.env
+.env.local
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Test / tooling caches
+.phpunit.result.cache
+.phpunit.cache/
+.php-cs-fixer.cache

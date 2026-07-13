@@ -1,0 +1,47 @@
+{
+  "name": "middag-io/wp-boilerplate",
+  "description": "MIDDAG's reference architecture for a WordPress plugin — composes the OSS framework/wordpress/ui libraries end to end.",
+  "license": "GPL-3.0-or-later",
+  "type": "wordpress-plugin",
+  "authors": [
+    {
+      "name": "Michael Meneses",
+      "email": "michael@middag.com.br"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "boilerplate",
+    "middag"
+  ],
+  "require": {
+    "php": ">=8.2",
+    "composer/installers": "^2.3",
+    "middag-io/framework": "^1.7.1",
+    "middag-io/wordpress": "^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Middag\\WpBoilerplate\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Middag\\WpBoilerplate\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "installer-name": "middag-boilerplate"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
