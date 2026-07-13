@@ -7,6 +7,10 @@ namespace Middag\WpBoilerplate\Core;
 use Middag\Framework\Kernel\ContainerFactory;
 use Middag\Framework\Kernel\Contract\HostComponentContextInterface;
 use Middag\Framework\Kernel\HostContext;
+use Middag\Framework\Translation\Contract\TranslatorInterface;
+use Middag\WordPress\Cron\CronHandler;
+use Middag\WordPress\Cron\CronRegistrar;
+use Middag\WordPress\Cron\Enum\CronInterval;
 use Middag\WordPress\Database\WpdbConnectionAdapter;
 use Middag\WordPress\Definition\DefinitionRegistrar;
 use Middag\WordPress\Definition\PostTypeDefinition;
@@ -14,6 +18,7 @@ use Middag\WordPress\Hook\HookRegistrar;
 use Middag\WordPress\Http\Routing\RestRouteRegistrar;
 use Middag\WordPress\Runtime\WpComponentContext;
 use Middag\WpBoilerplate\Api\V1\WidgetController;
+use Middag\WpBoilerplate\Domain\Widget\SyncWidgetsService;
 use Middag\WpBoilerplate\WordPress\Schema\SchemaInstaller;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -78,7 +83,7 @@ final class Plugin
     {
         $hookDir = rtrim((string) $context->basePath(), '/\\') . '/src/WordPress/Hook';
 
-        add_action('init', static function () use ($container, $hookDir): void {
+        add_action('init', static function () use ($container, $context, $hookDir): void {
             // Declarative CPT registration — the wp-adapter's DefinitionRegistrar
             // wires register_post_type from a typed PostTypeDefinition. Distinct
             // from the custom-table Widget: this shows native WP content storage.
@@ -94,6 +99,19 @@ final class Plugin
             // Discover + register every *Hooks class under src/WordPress/Hook,
             // resolving each from the container so hooks can take dependencies.
             (new HookRegistrar($container, 'Middag\\WpBoilerplate\\WordPress\\Hook\\', $hookDir))->register();
+
+            // Schedule the hourly sync via the typed cron API. The handler is a
+            // closure that lazily resolves SyncWidgetsService from the container
+            // when WP-Cron fires the event — typed interval, no magic strings.
+            /** @var TranslatorInterface $translator */
+            $translator = $container->get(TranslatorInterface::class);
+            $cron = new CronRegistrar($context, $translator);
+            $cron->addEvent(
+                'mdgbp_sync',
+                CronInterval::Hourly,
+                CronHandler::dispatch($container, SyncWidgetsService::class, 'run'),
+            );
+            $cron->register();
         });
 
         // REST: the registrar resolves each controller from the container and
@@ -121,6 +139,9 @@ final class Plugin
 
     public static function deactivate(): void
     {
+        // Clear the scheduled sync so it does not survive deactivation.
+        wp_clear_scheduled_hook('mdgbp_sync');
+
         flush_rewrite_rules();
     }
 }
