@@ -21,6 +21,14 @@
     "middag-io/framework": "^1.7.1",
     "middag-io/wordpress": "^1.6"
   },
+  "require-dev": {
+    "brain/monkey": "^2.6",
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "php-stubs/wordpress-stubs": "^6.8",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^12",
+    "rector/rector": "^2.4"
+  },
   "autoload": {
     "psr-4": {
       "Middag\\WpBoilerplate\\": "src/"
@@ -32,7 +40,8 @@
     }
   },
   "extra": {
-    "installer-name": "middag-boilerplate"
+    "installer-name": "middag-boilerplate",
+    "_comment:vendor-isolation": "This OSS reference does NOT prefix its vendor tree. Prefixing Symfony DI alone is incoherent because middag-io/framework exposes Symfony DI types in its public API (BootstrapInterface::configure(ContainerBuilder)) and is not prefixed alongside it. A production plugin that must coexist with other plugins bundling a different framework/Symfony scopes the WHOLE graph (middag-io/framework + Symfony + PSR) with PHP-Scoper at build time — see README 'Vendor isolation'. That is a product-build concern (D6), deliberately not demonstrated here to keep the reference coherent."
   },
   "config": {
     "allow-plugins": {
@@ -41,6 +50,28 @@
     "optimize-autoloader": true,
     "sort-packages": true,
     "preferred-install": "dist"
+  },
+  "scripts": {
+    "check:style": "php-cs-fixer fix --dry-run --diff",
+    "check:rector": "rector process --dry-run",
+    "check:stan": "phpstan analyse --configuration=.phpstan.neon",
+    "check": [
+      "@check:style",
+      "@check:rector",
+      "@check:stan"
+    ],
+    "fix:style": "php-cs-fixer fix",
+    "fix:rector": "rector process",
+    "fix": [
+      "@fix:rector",
+      "@fix:style"
+    ],
+    "test": "phpunit",
+    "i18n:pot": "wp i18n make-pot . languages/middag-boilerplate.pot --domain=middag-boilerplate --exclude=vendor,node_modules,tests,ui/src --skip-js",
+    "dist:build": [
+      "@check",
+      "@test"
+    ]
   },
   "minimum-stability": "dev",
   "prefer-stable": true
