@@ -6,6 +6,7 @@ namespace Middag\WpBoilerplate\Tests\Integration\Core;
 
 use Middag\Framework\Kernel\ContainerFactory;
 use Middag\Framework\Kernel\Contract\HostComponentContextInterface;
+use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Core\AppBootstrap;
 use Middag\WpBoilerplate\Domain\Widget\Contract\WidgetRepositoryInterface;
 use Middag\WpBoilerplate\Domain\Widget\WidgetService;
@@ -39,6 +40,9 @@ final class ContainerBootTest extends TestCase
 
         // Single-interface auto-alias wired the domain contract to the concrete repo.
         self::assertTrue($container->has(WidgetRepositoryInterface::class), 'repository auto-aliased');
+
+        // The REST controller autowired its authenticator + domain service.
+        self::assertTrue($container->has(WidgetController::class), 'WidgetController discovered + autowired');
     }
 
     private function context(): HostComponentContextInterface

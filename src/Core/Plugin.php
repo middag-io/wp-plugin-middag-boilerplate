@@ -11,7 +11,9 @@ use Middag\WordPress\Database\WpdbConnectionAdapter;
 use Middag\WordPress\Definition\DefinitionRegistrar;
 use Middag\WordPress\Definition\PostTypeDefinition;
 use Middag\WordPress\Hook\HookRegistrar;
+use Middag\WordPress\Http\Routing\RestRouteRegistrar;
 use Middag\WordPress\Runtime\WpComponentContext;
+use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\WordPress\Schema\SchemaInstaller;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -92,6 +94,14 @@ final class Plugin
             // Discover + register every *Hooks class under src/WordPress/Hook,
             // resolving each from the container so hooks can take dependencies.
             (new HookRegistrar($container, 'Middag\\WpBoilerplate\\WordPress\\Hook\\', $hookDir))->register();
+        });
+
+        // REST: the registrar resolves each controller from the container and
+        // registers its routes under the derived namespace (middag-boilerplate/v1).
+        add_action('rest_api_init', static function () use ($container, $context): void {
+            $registrar = new RestRouteRegistrar($container, $context);
+            $registrar->addController(WidgetController::class);
+            $registrar->register();
         });
     }
 
