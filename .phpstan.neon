@@ -2,6 +2,7 @@ parameters:
     level: 6
     paths:
         - src
+        - middag-boilerplate.php
     # WordPress core function/class stubs (WP is not a Composer dependency).
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
