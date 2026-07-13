@@ -47,6 +47,10 @@ if (!is_file($middagBoilerplateAutoload)) {
 
 require $middagBoilerplateAutoload;
 
+// Lifecycle: create the widget table on activation, clean up on deactivation.
+register_activation_hook(__FILE__, [Plugin::class, 'activate']);
+register_deactivation_hook(__FILE__, [Plugin::class, 'deactivate']);
+
 // Boot on plugins_loaded (never at file scope) so the container is built after
 // WordPress and every other plugin's classes are available.
 add_action('plugins_loaded', static function (): void {

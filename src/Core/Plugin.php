@@ -7,7 +7,12 @@ namespace Middag\WpBoilerplate\Core;
 use Middag\Framework\Kernel\ContainerFactory;
 use Middag\Framework\Kernel\Contract\HostComponentContextInterface;
 use Middag\Framework\Kernel\HostContext;
+use Middag\WordPress\Database\WpdbConnectionAdapter;
+use Middag\WordPress\Definition\DefinitionRegistrar;
+use Middag\WordPress\Definition\PostTypeDefinition;
+use Middag\WordPress\Hook\HookRegistrar;
 use Middag\WordPress\Runtime\WpComponentContext;
+use Middag\WpBoilerplate\WordPress\Schema\SchemaInstaller;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -69,6 +74,43 @@ final class Plugin
      */
     private static function registerHooks(ContainerBuilder $container, HostComponentContextInterface $context): void
     {
-        // Subsystem wiring is added by the WordPress/Api/UI layers.
+        $hookDir = rtrim((string) $context->basePath(), '/\\') . '/src/WordPress/Hook';
+
+        add_action('init', static function () use ($container, $hookDir): void {
+            // Declarative CPT registration — the wp-adapter's DefinitionRegistrar
+            // wires register_post_type from a typed PostTypeDefinition. Distinct
+            // from the custom-table Widget: this shows native WP content storage.
+            (new DefinitionRegistrar())->register([
+                new PostTypeDefinition('mdgbp_note', 'Note', 'Notes', args: [
+                    'public' => true,
+                    'show_in_rest' => true,
+                    'supports' => ['title', 'editor'],
+                    'menu_icon' => 'dashicons-sticky',
+                ]),
+            ]);
+
+            // Discover + register every *Hooks class under src/WordPress/Hook,
+            // resolving each from the container so hooks can take dependencies.
+            (new HookRegistrar($container, 'Middag\\WpBoilerplate\\WordPress\\Hook\\', $hookDir))->register();
+        });
+    }
+
+    /**
+     * Plugin activation: create the widget table (idempotent) and flush rewrite
+     * rules so the CPT's routes resolve. Runs independently of the container.
+     */
+    public static function activate(): void
+    {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+
+        (new SchemaInstaller())->install(new WpdbConnectionAdapter($wpdb));
+
+        flush_rewrite_rules();
+    }
+
+    public static function deactivate(): void
+    {
+        flush_rewrite_rules();
     }
 }
