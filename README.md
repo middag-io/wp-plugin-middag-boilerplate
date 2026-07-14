@@ -65,6 +65,12 @@ org, and `installer-name` governs the install path.
   - `WordPress/` — the ONLY namespace that touches the WP API/`$wpdb`: repository
     (built on the framework's `AbstractRepository`), mapper, hooks, CPT, settings.
   - `Api/V1/` — REST controllers built on `AbstractWpRestController`.
+  - `Integration/<Vendor>/` — outbound third-party integrations. A `*Client`
+    (talks over the WordPress HTTP API, no SDK) is hand-wired in
+    `AppServiceProvider` because `Client` is not a discovery suffix; a discovered
+    `*Service` maps the result into the domain. The `OptionalVendor/` subtree
+    shows the guarded pattern for glue that `extends` a base only present when a
+    third-party plugin is active (see "Lifecycle & data").
   - `UI/` — Inertia page controllers (they build the `PageContract` in PHP).
 - **`ui/`** — React + Inertia + `@middag-io/react` + Vite → IIFE in `assets/dist/`.
 
@@ -133,12 +139,49 @@ identity via `WpComponentContext`; one class per layer; auto-discovery by suffix
 + single-interface auto-alias; a table generated from `#[Table]` via
 `SchemaBuilder`; REST with real `permission_callback`s + a `RestResponse` envelope;
 cron with a typed `CronInterval`; an `InertiaAdapter` with a derived mount id;
-SELECTIVE block registration; a native settings page; CSRF on mutations.
+SELECTIVE block registration; a native settings page; CSRF on mutations; an
+`Integration/` layer (a hand-wired `*Client` + a guarded optional-vendor glue
+class); custom capabilities via `CapabilityRegistrar`; a preservation-first
+`uninstall.php`.
 
 **You are FREE to:** choose `SCAN_DIRS`/namespace; which blocks/shells to register;
 inject your own `RequestAuthenticatorInterface`; use the framework's async bus;
 add CPTs/routes/pages; or ignore Inertia/React and use a single layer. The
 libraries are a menu, not a mandate.
+
+---
+
+## Lifecycle & data: activation, capabilities, uninstall
+
+The plugin uses plain static WordPress hooks for its lifecycle —
+`register_activation_hook`/`register_deactivation_hook` → `Plugin::activate()` /
+`Plugin::deactivate()`. It deliberately does NOT wrap this in a "PluginLifecycle"
+abstraction: such a helper couples every plugin to subsystems it may not need
+(it registers a `CronRegistrar` unconditionally), dead weight for a plugin
+without cron. Static hooks keep activation explicit and cost-free — reach for a
+heavier abstraction only when a plugin actually needs it.
+
+- **Capabilities.** `activate()` grants the plugin's custom capabilities through
+  the wp-adapter's `CapabilityRegistrar`, driven by a central
+  `Plugin::CAPABILITY_MAP` (role → caps); `deactivate()` revokes them. One
+  symmetric map beats scattered `add_cap`/`remove_cap` calls.
+- **Uninstall.** `uninstall.php` (run only on DELETE) is PRESERVATION-FIRST: by
+  default it removes only derived/scheduled state, and destroys production data
+  (the widget table, CPT content, options, the custom cap) ONLY when the owner
+  opts in with `define('MDGBP_UNINSTALL_PURGE', true)`. It runs without the
+  Composer autoloader, so it uses core APIs + hardcoded literals, and loops over
+  every site on multisite.
+
+---
+
+## i18n: English-first
+
+Every user-facing string is wrapped in a WordPress i18n call
+(`__()` / `esc_html__()`, text domain `middag-boilerplate` = the slug) and the
+**msgid IS the English text** — never a pre-translated literal. Translations live
+in `languages/` as `.po` / `.mo`; regenerate the `.pot` with `composer i18n:pot`.
+English-first keeps msgids stable across locales and lets any translator start
+from the source string.
 
 ---
 
