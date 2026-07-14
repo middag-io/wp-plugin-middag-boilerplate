@@ -26,7 +26,7 @@
     "friendsofphp/php-cs-fixer": "^3.95",
     "php-stubs/wordpress-stubs": "^6.8",
     "phpstan/phpstan": "^2.1",
-    "phpunit/phpunit": "^12",
+    "phpunit/phpunit": "^11",
     "rector/rector": "^2.4"
   },
   "autoload": {
@@ -49,7 +49,10 @@
     },
     "optimize-autoloader": true,
     "sort-packages": true,
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "platform": {
+      "php": "8.2"
+    }
   },
   "scripts": {
     "check:style": "php-cs-fixer fix --dry-run --diff",
