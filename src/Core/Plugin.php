@@ -21,6 +21,7 @@ use Middag\WordPress\Http\Inertia\InertiaAdapter;
 use Middag\WordPress\Http\Routing\RestRouteRegistrar;
 use Middag\WordPress\Http\Routing\Router;
 use Middag\WordPress\Runtime\WpComponentContext;
+use Middag\WordPress\Security\CapabilityRegistrar;
 use Middag\WordPress\Security\Enum\WpCapability;
 use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Domain\Widget\SyncWidgetsService;
@@ -39,6 +40,21 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 final class Plugin
 {
+    /**
+     * Custom capabilities granted per role on activation, revoked on
+     * deactivation. A central, extensible map (contrast scattered add_cap calls)
+     * driven through the wp-adapter's {@see CapabilityRegistrar}.
+     *
+     * `mdgbp_manage` is the plugin's own gate — a product maps it onto a CPT's
+     * `create_posts`/`edit_posts` or checks `current_user_can('mdgbp_manage')`
+     * on a settings surface. Roles absent on a site are skipped safely, so
+     * optional roles (e.g. `shop_manager`) can be listed without a guard.
+     *
+     * @var array<string, list<string>>
+     */
+    private const CAPABILITY_MAP = [
+        'administrator' => ['mdgbp_manage'],
+    ];
     private static ?ContainerBuilder $container = null;
 
     /**
@@ -81,8 +97,9 @@ final class Plugin
     }
 
     /**
-     * Plugin activation: create the widget table (idempotent) and flush rewrite
-     * rules so the CPT's routes resolve. Runs independently of the container.
+     * Plugin activation: create the widget table (idempotent), grant the
+     * plugin's custom capabilities and flush rewrite rules so the CPT's routes
+     * resolve. Runs independently of the container.
      */
     public static function activate(): void
     {
@@ -91,6 +108,8 @@ final class Plugin
 
         (new SchemaInstaller())->install(new WpdbConnectionAdapter($wpdb));
 
+        (new CapabilityRegistrar(self::CAPABILITY_MAP))->register();
+
         flush_rewrite_rules();
     }
 
@@ -98,6 +117,10 @@ final class Plugin
     {
         // Clear the scheduled sync so it does not survive deactivation.
         wp_clear_scheduled_hook('mdgbp_sync');
+
+        // Revoke the custom capabilities granted on activation. (Production DATA
+        // is only removed on uninstall, behind MDGBP_UNINSTALL_PURGE.)
+        (new CapabilityRegistrar(self::CAPABILITY_MAP))->unregister();
 
         flush_rewrite_rules();
     }
