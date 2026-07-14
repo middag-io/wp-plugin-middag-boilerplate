@@ -26,6 +26,7 @@ use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Domain\Widget\SyncWidgetsService;
 use Middag\WpBoilerplate\UI\WidgetPageController;
 use Middag\WpBoilerplate\WordPress\Schema\SchemaInstaller;
+use Middag\WpBoilerplate\WordPress\Settings\WidgetSettings;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -172,6 +173,22 @@ final class Plugin
                 'middag-boilerplate',
                 $assetsBaseUrl . 'app.js',
                 $assetsBaseUrl . 'style.css',
+            );
+        });
+
+        // Native (non-React) settings page under the SAME plugin menu — proves
+        // the plugin is not 100% Inertia. Registered with a plain submenu whose
+        // callback renders the WordPress Settings API form.
+        $settings = new WidgetSettings();
+        add_action('admin_init', [$settings, 'register']);
+        add_action('admin_menu', static function () use ($admin, $settings): void {
+            add_submenu_page(
+                $admin->menuSlug(),
+                __('MIDDAG Boilerplate Settings', 'middag-boilerplate'),
+                __('Settings', 'middag-boilerplate'),
+                WpCapability::ManageOptions->value,
+                WidgetSettings::PAGE,
+                [$settings, 'renderPage'],
             );
         });
     }
