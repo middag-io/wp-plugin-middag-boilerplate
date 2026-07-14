@@ -10,7 +10,11 @@ use Middag\WpBoilerplate\Api\V1\WidgetController;
 use Middag\WpBoilerplate\Core\AppBootstrap;
 use Middag\WpBoilerplate\Domain\Widget\Contract\WidgetRepositoryInterface;
 use Middag\WpBoilerplate\Domain\Widget\WidgetService;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogClientInterface;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogConfigResolver;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogSyncService;
 use Middag\WpBoilerplate\UI\WidgetPageController;
+use Middag\WpBoilerplate\WordPress\Hook\OptionalVendorHooks;
 use Middag\WpBoilerplate\WordPress\Repository\WidgetRepository;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -47,6 +51,17 @@ final class ContainerBootTest extends TestCase
 
         // The admin page controller autowired the Inertia adapter + domain service.
         self::assertTrue($container->has(WidgetPageController::class), 'WidgetPageController discovered + autowired');
+
+        // Integration layer: the discovered *Resolver + *Service, and the
+        // hand-wired *Client aliased to its seam (a Client suffix never
+        // auto-registers, so this proves the manual binding in AppServiceProvider).
+        self::assertTrue($container->has(RemoteCatalogConfigResolver::class), 'RemoteCatalogConfigResolver discovered');
+        self::assertTrue($container->has(RemoteCatalogSyncService::class), 'RemoteCatalogSyncService discovered + autowired');
+        self::assertTrue($container->has(RemoteCatalogClientInterface::class), 'RemoteCatalog client hand-aliased to its interface');
+
+        // The vendor-guarded hook is discovered (its OptionalVendor/ glue is NOT,
+        // proving IGNORE_DIRS kept the stub-less extension out of the container).
+        self::assertTrue($container->has(OptionalVendorHooks::class), 'OptionalVendorHooks discovered');
     }
 
     private function context(): HostComponentContextInterface

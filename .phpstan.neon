@@ -3,6 +3,14 @@ parameters:
     paths:
         - src
         - middag-boilerplate.php
+    # The OptionalVendor/ subtree extends a base from an optional third-party
+    # plugin that ships no stub, so PHPStan cannot resolve the parent. Exclude it
+    # from analysis (the classes stay scanned for reference resolution and are
+    # only ever instantiated behind a runtime guard). Mirror of
+    # AppServiceProvider::IGNORE_DIRS — the two must list the same dir.
+    excludePaths:
+        analyse:
+            - src/Integration/OptionalVendor
     # WordPress core function/class stubs (WP is not a Composer dependency).
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php

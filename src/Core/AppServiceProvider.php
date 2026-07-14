@@ -6,6 +6,11 @@ namespace Middag\WpBoilerplate\Core;
 
 use Middag\Framework\Kernel\ServiceProvider;
 use Middag\WpBoilerplate\Domain\Widget\WidgetService;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogClient;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogClientInterface;
+use Middag\WpBoilerplate\Integration\RemoteCatalog\RemoteCatalogSyncService;
+use Middag\WpBoilerplate\WordPress\Hook\OptionalVendorHooks;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Convention-based service discovery for the plugin.
@@ -32,5 +37,50 @@ final class AppServiceProvider extends ServiceProvider
         'src/WordPress',
         'src/Api',
         'src/UI',
+        'src/Integration',
     ];
+
+    /**
+     * The framework's ignore list PLUS the plugin's vendor-coupled subtree.
+     *
+     * Overriding the const REPLACES the parent's, so the framework defaults are
+     * repeated here. `OptionalVendor` holds classes that `extends` a base only
+     * present when a third-party plugin is active; scanning it would fatal at
+     * container-build time on a site without that plugin, so discovery skips it
+     * and those classes are instantiated by hand behind a guard (see
+     * {@see OptionalVendorHooks}).
+     */
+    protected const IGNORE_DIRS = [
+        'Contract', 'Entity', 'Enum', 'Exception', 'Trait',
+        'ValueObject', 'DTO', 'Dto',
+        'OptionalVendor',
+    ];
+
+    public static function register(ContainerBuilder $container, string $basePath): void
+    {
+        parent::register($container, $basePath);
+
+        self::registerRemoteCatalog($container);
+    }
+
+    /**
+     * Hand-wire the Integration `*Client` and alias its seam.
+     *
+     * The `Client` short name is not a discovery suffix, so it never
+     * auto-registers; bind the concrete (its {@see RemoteCatalogConfigResolver}
+     * collaborator is autowired) and alias the interface so consumers like
+     * {@see RemoteCatalogSyncService} resolve the seam, not the concrete. This
+     * is the same recipe a product uses to bind a proprietary Stripe/PSP client.
+     */
+    private static function registerRemoteCatalog(ContainerBuilder $container): void
+    {
+        $container->register(RemoteCatalogClient::class, RemoteCatalogClient::class)
+            ->setAutowired(true)
+            ->setPublic(true)
+        ;
+
+        $container->setAlias(RemoteCatalogClientInterface::class, RemoteCatalogClient::class)
+            ->setPublic(true)
+        ;
+    }
 }
