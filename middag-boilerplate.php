@@ -5,7 +5,7 @@
  * Plugin URI:        https://github.com/middag-io/wp-plugin-middag-boilerplate
  * Description:       MIDDAG's reference architecture for a WordPress plugin — composes the OSS framework, WordPress adapter, and UI libraries end to end.
  * x-release-please-start-version
- * Version:           0.1.0
+ * Version:           1.0.0
  * x-release-please-end
  * Requires at least: 6.5
  * Requires PHP:      8.2
@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-const MIDDAG_BOILERPLATE_VERSION = '0.1.0'; // x-release-please-version
+const MIDDAG_BOILERPLATE_VERSION = '1.0.0'; // x-release-please-version
 
 define('MIDDAG_BOILERPLATE_FILE', __FILE__);
 define('MIDDAG_BOILERPLATE_PATH', plugin_dir_path(__FILE__));
