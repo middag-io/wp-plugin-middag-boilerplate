@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-const MIDDAG_BOILERPLATE_VERSION = '0.1.0';
+const MIDDAG_BOILERPLATE_VERSION = '0.1.0'; // x-release-please-version
 
 define('MIDDAG_BOILERPLATE_FILE', __FILE__);
 define('MIDDAG_BOILERPLATE_PATH', plugin_dir_path(__FILE__));
