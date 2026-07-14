@@ -58,7 +58,8 @@ final class WidgetSettings
     public function register(): void
     {
         (new SettingsPageRegistrar(new SettingsRegistrar()))
-            ->register(self::PAGE, self::OPTION_GROUP, $this->tabs(), WpCapability::ManageOptions);
+            ->register(self::PAGE, self::OPTION_GROUP, $this->tabs(), WpCapability::ManageOptions)
+        ;
     }
 
     /**

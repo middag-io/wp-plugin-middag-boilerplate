@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Middag\WpBoilerplate\Core;
 
 use Middag\Framework\Kernel\ServiceProvider;
+use Middag\WpBoilerplate\Domain\Widget\WidgetService;
 
 /**
  * Convention-based service discovery for the plugin.
@@ -13,7 +14,7 @@ use Middag\Framework\Kernel\ServiceProvider;
  * the layer directories to scan. Discovery registers every class whose short
  * name ends in a framework REGISTER_SUFFIX (Service, Repository, Controller,
  * Hooks, ...) and auto-aliases single-interface implementations — so a
- * {@see \Middag\WpBoilerplate\Domain\Widget\WidgetService} and its interface
+ * {@see WidgetService} and its interface
  * are wired with zero manual container calls.
  *
  * Load-bearing contract (see ServiceProvider::register): SCAN_DIRS resolve
@@ -24,7 +25,7 @@ use Middag\Framework\Kernel\ServiceProvider;
  */
 final class AppServiceProvider extends ServiceProvider
 {
-    protected const ROOT_NAMESPACE = 'Middag\\WpBoilerplate';
+    protected const ROOT_NAMESPACE = 'Middag\WpBoilerplate';
 
     protected const SCAN_DIRS = [
         'src/Domain',

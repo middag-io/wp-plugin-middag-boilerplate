@@ -62,7 +62,7 @@ final class Plugin
         // when a collaborator was constructed outside the container.
         HostContext::set($context);
 
-        /** @var \wpdb $wpdb */
+        // @var \wpdb $wpdb
         global $wpdb;
 
         $factory = new ContainerFactory();
@@ -78,6 +78,28 @@ final class Plugin
     public static function container(): ?ContainerBuilder
     {
         return self::$container;
+    }
+
+    /**
+     * Plugin activation: create the widget table (idempotent) and flush rewrite
+     * rules so the CPT's routes resolve. Runs independently of the container.
+     */
+    public static function activate(): void
+    {
+        // @var \wpdb $wpdb
+        global $wpdb;
+
+        (new SchemaInstaller())->install(new WpdbConnectionAdapter($wpdb));
+
+        flush_rewrite_rules();
+    }
+
+    public static function deactivate(): void
+    {
+        // Clear the scheduled sync so it does not survive deactivation.
+        wp_clear_scheduled_hook('mdgbp_sync');
+
+        flush_rewrite_rules();
     }
 
     /**
@@ -105,7 +127,7 @@ final class Plugin
 
             // Discover + register every *Hooks class under src/WordPress/Hook,
             // resolving each from the container so hooks can take dependencies.
-            (new HookRegistrar($container, 'Middag\\WpBoilerplate\\WordPress\\Hook\\', $hookDir))->register();
+            (new HookRegistrar($container, 'Middag\WpBoilerplate\WordPress\Hook\\', $hookDir))->register();
 
             // Schedule the hourly sync via the typed cron API. The handler is a
             // closure that lazily resolves SyncWidgetsService from the container
@@ -191,27 +213,5 @@ final class Plugin
                 [$settings, 'renderPage'],
             );
         });
-    }
-
-    /**
-     * Plugin activation: create the widget table (idempotent) and flush rewrite
-     * rules so the CPT's routes resolve. Runs independently of the container.
-     */
-    public static function activate(): void
-    {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-
-        (new SchemaInstaller())->install(new WpdbConnectionAdapter($wpdb));
-
-        flush_rewrite_rules();
-    }
-
-    public static function deactivate(): void
-    {
-        // Clear the scheduled sync so it does not survive deactivation.
-        wp_clear_scheduled_hook('mdgbp_sync');
-
-        flush_rewrite_rules();
     }
 }

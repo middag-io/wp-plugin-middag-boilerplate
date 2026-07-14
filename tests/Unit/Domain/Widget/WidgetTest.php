@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Widget::class)]
 final class WidgetTest extends TestCase
 {
-    public function test_from_array_round_trips_through_to_array(): void
+    public function testFromArrayRoundTripsThroughToArray(): void
     {
         $row = ['id' => 5, 'name' => 'Sensor', 'status' => 'active', 'created_at' => '2026-01-01 00:00:00'];
 
@@ -24,7 +24,7 @@ final class WidgetTest extends TestCase
         self::assertSame($row, $widget->toArray());
     }
 
-    public function test_from_array_defaults_missing_status_to_draft(): void
+    public function testFromArrayDefaultsMissingStatusToDraft(): void
     {
         $widget = Widget::fromArray(['name' => 'Bare']);
 
@@ -32,7 +32,7 @@ final class WidgetTest extends TestCase
         self::assertSame(WidgetStatus::Draft, $widget->status());
     }
 
-    public function test_status_transitions_and_id_assignment(): void
+    public function testStatusTransitionsAndIdAssignment(): void
     {
         $widget = new Widget(null, 'Sensor', WidgetStatus::Draft, '2026-01-01 00:00:00');
 
@@ -46,7 +46,7 @@ final class WidgetTest extends TestCase
         self::assertSame(9, $widget->getId());
     }
 
-    public function test_json_serialize_matches_to_array(): void
+    public function testJsonSerializeMatchesToArray(): void
     {
         $widget = new Widget(1, 'Sensor', WidgetStatus::Active, '2026-01-01 00:00:00');
 

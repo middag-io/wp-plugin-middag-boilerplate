@@ -20,9 +20,9 @@ final class Widget implements EntityInterface
 {
     public function __construct(
         private ?int $id,
-        private string $name,
+        private readonly string $name,
         private WidgetStatus $status,
-        private string $createdAt,
+        private readonly string $createdAt,
     ) {}
 
     public function getId(): ?int

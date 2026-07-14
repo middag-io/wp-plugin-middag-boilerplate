@@ -26,7 +26,8 @@ final class SchemaInstaller
     {
         $descriptor = (new SchemaBuilder())
             ->registerClass(WidgetSchema::class)
-            ->table(self::LOGICAL_TABLE);
+            ->table(self::LOGICAL_TABLE)
+        ;
 
         if ($descriptor === null) {
             return;
@@ -36,7 +37,7 @@ final class SchemaInstaller
 
         $adapter = new MysqlSchemaBuilderAdapter($connection);
 
-        if (!$adapter->tableExists((string) $descriptor['name'])) {
+        if (!$adapter->tableExists($descriptor['name'])) {
             $adapter->createTable($descriptor);
         }
     }

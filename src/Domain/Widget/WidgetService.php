@@ -15,11 +15,11 @@ use Psr\Clock\ClockInterface;
  * the framework ServiceProvider ('Service' suffix); its {@see WidgetRepositoryInterface}
  * argument resolves to the WordPress-layer repository via the auto-alias.
  */
-final class WidgetService
+final readonly class WidgetService
 {
     public function __construct(
-        private readonly WidgetRepositoryInterface $repository,
-        private readonly ClockInterface $clock,
+        private WidgetRepositoryInterface $repository,
+        private ClockInterface $clock,
     ) {}
 
     /**

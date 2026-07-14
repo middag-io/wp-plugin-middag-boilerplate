@@ -22,13 +22,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * the auth seam, the Inertia adapter, and convention-based discovery of the
  * plugin's own services via {@see AppServiceProvider}.
  */
-final class AppBootstrap implements BootstrapInterface
+final readonly class AppBootstrap implements BootstrapInterface
 {
     /**
      * @param string $projectRoot the directory that CONTAINS src/ (no trailing
      *                            slash) — ServiceProvider scans from here
      */
-    public function __construct(private readonly string $projectRoot) {}
+    public function __construct(private string $projectRoot) {}
 
     public function configure(ContainerBuilder $builder): void
     {
@@ -40,18 +40,21 @@ final class AppBootstrap implements BootstrapInterface
         // its synthetic slot so services can autowire HostComponentContextInterface.
         $builder->register(HostComponentContextInterface::class)
             ->setSynthetic(true)
-            ->setPublic(true);
+            ->setPublic(true)
+        ;
 
         // Auth seam: cookie/session by default. A product that needs bearer/JWT
         // composes its own RequestAuthenticatorInterface and binds it here instead.
         $builder->register(RequestAuthenticatorInterface::class, WpSessionAuthenticator::class)
-            ->setPublic(true);
+            ->setPublic(true)
+        ;
 
         // Per-component Inertia adapter — autowires the component context above;
         // the response emitter falls back to its PhpSapiEmitter default.
         $builder->register(InertiaAdapter::class, InertiaAdapter::class)
             ->setAutowired(true)
-            ->setPublic(true);
+            ->setPublic(true)
+        ;
 
         // Discover the plugin's own Domain/WordPress/Api/UI services by convention.
         AppServiceProvider::register($builder, $this->projectRoot);

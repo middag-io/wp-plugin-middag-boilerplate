@@ -7,11 +7,12 @@ namespace Middag\WpBoilerplate\WordPress\Persistence;
 use Middag\Framework\Persistence\Contract\EntityInterface;
 use Middag\Framework\Persistence\Contract\MapperInterface;
 use Middag\WpBoilerplate\Domain\Widget\Widget;
+use Middag\WpBoilerplate\WordPress\Repository\WidgetRepository;
 
 /**
  * Hydrates/dehydrates {@see Widget} across the persistence seam so the entity
  * stays ignorant of storage. Auto-discovered ('Mapper' suffix) and injected
- * into {@see \Middag\WpBoilerplate\WordPress\Repository\WidgetRepository}.
+ * into {@see WidgetRepository}.
  *
  * @implements MapperInterface<Widget>
  */

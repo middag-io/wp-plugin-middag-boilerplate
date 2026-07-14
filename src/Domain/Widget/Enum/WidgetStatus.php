@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Middag\WpBoilerplate\Domain\Widget\Enum;
 
+use Middag\WpBoilerplate\Domain\Widget\Widget;
+
 /**
- * Lifecycle state of a {@see \Middag\WpBoilerplate\Domain\Widget\Widget}.
+ * Lifecycle state of a {@see Widget}.
  *
  * Lives under Enum/ so the framework ServiceProvider skips it during discovery
  * (it is a value, not a service).

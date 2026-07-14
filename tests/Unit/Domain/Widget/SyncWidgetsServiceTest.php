@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(SyncWidgetsService::class)]
 final class SyncWidgetsServiceTest extends TestCase
 {
-    public function test_run_returns_the_active_widget_count(): void
+    public function testRunReturnsTheActiveWidgetCount(): void
     {
         $repository = new class implements WidgetRepositoryInterface {
             public function store(Widget $widget): void {}

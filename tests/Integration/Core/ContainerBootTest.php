@@ -25,7 +25,7 @@ use stdClass;
  */
 final class ContainerBootTest extends TestCase
 {
-    public function test_container_compiles_and_discovers_the_plugin_services(): void
+    public function testContainerCompilesAndDiscoversThePluginServices(): void
     {
         $projectRoot = dirname(__DIR__, 3);
 

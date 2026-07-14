@@ -25,7 +25,7 @@ use Middag\WpBoilerplate\Domain\Widget\WidgetService;
  * Dispatched by the AdminRouteRegistrar → Router: GET '/' renders the list,
  * POST '/widgets' creates one — CSRF-guarded via the Inertia nonce action.
  */
-final class WidgetPageController
+final readonly class WidgetPageController
 {
     /**
      * Column defs matching the react lib's DenseTableColumnDef (key/label +
@@ -40,8 +40,8 @@ final class WidgetPageController
     ];
 
     public function __construct(
-        private readonly InertiaAdapter $inertia,
-        private readonly WidgetService $widgets,
+        private InertiaAdapter $inertia,
+        private WidgetService $widgets,
     ) {}
 
     public function index(): void
@@ -71,7 +71,8 @@ final class WidgetPageController
             ->shell('immersive')
             ->layout('stack')
             ->region('content', [$block])
-            ->build();
+            ->build()
+        ;
 
         $this->inertia->render('Widgets/Index', ['contract' => $contract]);
     }

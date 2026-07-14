@@ -17,7 +17,7 @@ use Psr\Clock\ClockInterface;
 #[CoversClass(WidgetService::class)]
 final class WidgetServiceTest extends TestCase
 {
-    public function test_create_stamps_created_at_from_clock_and_persists(): void
+    public function testCreateStampsCreatedAtFromClockAndPersists(): void
     {
         $repository = $this->inMemoryRepository();
         $clock = $this->fixedClock('2026-07-13 10:00:00');
@@ -32,7 +32,7 @@ final class WidgetServiceTest extends TestCase
         self::assertSame($widget, $repository->stored[0]);
     }
 
-    public function test_list_active_delegates_to_repository(): void
+    public function testListActiveDelegatesToRepository(): void
     {
         $repository = $this->inMemoryRepository();
         $repository->active = [new Widget(1, 'A', WidgetStatus::Active, '2026-01-01 00:00:00')];

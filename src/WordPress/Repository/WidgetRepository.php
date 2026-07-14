@@ -10,6 +10,7 @@ use Middag\Framework\Persistence\Repository\AbstractRepository;
 use Middag\WpBoilerplate\Domain\Widget\Contract\WidgetRepositoryInterface;
 use Middag\WpBoilerplate\Domain\Widget\Enum\WidgetStatus;
 use Middag\WpBoilerplate\Domain\Widget\Widget;
+use Middag\WpBoilerplate\Domain\Widget\WidgetService;
 use Middag\WpBoilerplate\WordPress\Persistence\WidgetMapper;
 
 /**
@@ -18,7 +19,7 @@ use Middag\WpBoilerplate\WordPress\Persistence\WidgetMapper;
  * Inherits find/save/delete from {@see AbstractRepository} and adds the
  * domain-shaped finders {@see WidgetRepositoryInterface} declares. The framework
  * ServiceProvider auto-aliases this to that interface (its single project-scoped
- * interface), so {@see \Middag\WpBoilerplate\Domain\Widget\WidgetService}
+ * interface), so {@see WidgetService}
  * receives it without any manual container wiring.
  *
  * The logical table name is resolved to its physical, `$wpdb`-prefixed form via
@@ -57,7 +58,8 @@ final class WidgetRepository extends AbstractRepository implements WidgetReposit
         $rows = $this->query()
             ->where('status', WidgetStatus::Active->value)
             ->orderByDesc('id')
-            ->get();
+            ->get()
+        ;
 
         return array_map(
             static fn (array $row): Widget => Widget::fromArray($row),

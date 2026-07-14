@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(WidgetMapper::class)]
 final class WidgetMapperTest extends TestCase
 {
-    public function test_db_to_domain_hydrates_a_widget(): void
+    public function testDbToDomainHydratesAWidget(): void
     {
         $widget = (new WidgetMapper())->dbToDomain(
             ['id' => 3, 'name' => 'Sensor', 'status' => 'active', 'created_at' => '2026-01-01 00:00:00'],
@@ -25,7 +25,7 @@ final class WidgetMapperTest extends TestCase
         self::assertSame('active', $widget->toArray()['status']);
     }
 
-    public function test_domain_to_db_drops_null_id_so_auto_increment_assigns_it(): void
+    public function testDomainToDbDropsNullIdSoAutoIncrementAssignsIt(): void
     {
         $record = (new WidgetMapper())->domainToDb(
             new Widget(null, 'Sensor', WidgetStatus::Draft, '2026-01-01 00:00:00'),
@@ -36,7 +36,7 @@ final class WidgetMapperTest extends TestCase
         self::assertSame('draft', $record['status']);
     }
 
-    public function test_domain_to_db_keeps_id_for_update(): void
+    public function testDomainToDbKeepsIdForUpdate(): void
     {
         $record = (new WidgetMapper())->domainToDb(
             new Widget(7, 'Sensor', WidgetStatus::Active, '2026-01-01 00:00:00'),

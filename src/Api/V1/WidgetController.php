@@ -54,7 +54,7 @@ final class WidgetController extends AbstractWpRestController
     public function store(WP_REST_Request $request): WP_REST_Response
     {
         $invalid = $this->validateRequired($this->getBody($request), ['name']);
-        if ($invalid !== null) {
+        if ($invalid instanceof WP_REST_Response) {
             return $invalid;
         }
 

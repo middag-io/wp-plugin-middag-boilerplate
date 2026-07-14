@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(WidgetSettings::class)]
 final class WidgetSettingsTest extends TestCase
 {
-    public function test_tabs_declare_the_general_fields(): void
+    public function testTabsDeclareTheGeneralFields(): void
     {
         $tabs = (new WidgetSettings())->tabs();
 
@@ -27,7 +27,7 @@ final class WidgetSettingsTest extends TestCase
         self::assertSame(['mdgbp_enabled', 'mdgbp_api_key', 'mdgbp_sync_interval'], $names);
     }
 
-    public function test_field_types_and_select_options(): void
+    public function testFieldTypesAndSelectOptions(): void
     {
         $fields = (new WidgetSettings())->tabs()[0]->sections[0]->fields;
 
@@ -37,7 +37,7 @@ final class WidgetSettingsTest extends TestCase
         self::assertArrayHasKey('hourly', $fields[2]->options);
     }
 
-    public function test_fields_resolve_a_sanitizer_from_their_type(): void
+    public function testFieldsResolveASanitizerFromTheirType(): void
     {
         $field = (new WidgetSettings())->tabs()[0]->sections[0]->fields[0];
 
