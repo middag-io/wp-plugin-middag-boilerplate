@@ -1,3 +1,0 @@
-# Build output — ignore everything except this file so the dir stays tracked.
-*
-!.gitignore

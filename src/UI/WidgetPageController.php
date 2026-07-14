@@ -28,12 +28,15 @@ use Middag\WpBoilerplate\Domain\Widget\WidgetService;
 final class WidgetPageController
 {
     /**
-     * @var list<array{key: string, label: string}>
+     * Column defs matching the react lib's DenseTableColumnDef (key/label +
+     * cell variant). 'badge'/'timestamp' pick the built-in cell renderers.
+     *
+     * @var list<array<string, string>>
      */
     private const COLUMNS = [
-        ['key' => 'name', 'label' => 'Name'],
-        ['key' => 'status', 'label' => 'Status'],
-        ['key' => 'created_at', 'label' => 'Created'],
+        ['key' => 'name', 'label' => 'Name', 'variant' => 'text'],
+        ['key' => 'status', 'label' => 'Status', 'variant' => 'badge'],
+        ['key' => 'created_at', 'label' => 'Created', 'variant' => 'timestamp', 'timestampFormat' => 'datetime'],
     ];
 
     public function __construct(
@@ -52,11 +55,22 @@ final class WidgetPageController
             $this->widgets->listActive(),
         );
 
+        // Emit the FULL DenseTableBlockData the react block expects (columns +
+        // rows + pagination + sort + filters). Single-page static data — a real
+        // plugin would honour the Inertia partial-reload params for server-side
+        // sort/filter/paginate.
+        $count = count($rows);
+        $block = BlockBuilder::denseTable('widgets', self::COLUMNS, $rows, [
+            'pagination' => ['page' => 1, 'perPage' => max(1, $count), 'total' => $count, 'lastPage' => 1],
+            'sort' => ['column' => 'created_at', 'direction' => 'desc'],
+            'filters' => ['available' => [], 'applied' => (object) []],
+        ]);
+
         $contract = PageBuilder::page('widget.index')
             ->title('Widgets')
             ->shell('immersive')
             ->layout('stack')
-            ->region('content', [BlockBuilder::denseTable('widgets', self::COLUMNS, $rows)])
+            ->region('content', [$block])
             ->build();
 
         $this->inertia->render('Widgets/Index', ['contract' => $contract]);

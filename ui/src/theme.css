@@ -1,0 +1,25 @@
+/*
+ * Host isolation for the wp-admin mount.
+ *
+ * The app renders inside the WordPress admin chrome, so it needs to know the
+ * admin bar height (the lib reads --host-header-height for sticky offsets) and
+ * scope its own resets to the mount node rather than leaking into wp-admin.
+ */
+#middag-boilerplate-app {
+  --host-header-height: 32px;
+  box-sizing: border-box;
+  min-height: calc(100vh - var(--host-header-height));
+}
+
+#middag-boilerplate-app *,
+#middag-boilerplate-app *::before,
+#middag-boilerplate-app *::after {
+  box-sizing: border-box;
+}
+
+/* WordPress collapses the admin bar to 46px on small screens. */
+@media screen and (max-width: 782px) {
+  #middag-boilerplate-app {
+    --host-header-height: 46px;
+  }
+}

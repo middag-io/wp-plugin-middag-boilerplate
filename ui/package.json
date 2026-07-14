@@ -4,8 +4,6 @@
   "type": "module",
   "description": "Admin UI for the MIDDAG WordPress plugin boilerplate — React 19 + Inertia v3 + @middag-io/react.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
     "build:wp": "vite build --config vite.config.wordpress.ts",
     "watch:wp": "vite build --watch --config vite.config.wordpress.ts",
     "typecheck": "tsc --noEmit",
