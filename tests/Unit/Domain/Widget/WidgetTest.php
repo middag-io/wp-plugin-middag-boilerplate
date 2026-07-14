@@ -52,4 +52,11 @@ final class WidgetTest extends TestCase
 
         self::assertSame($widget->toArray(), $widget->jsonSerialize());
     }
+
+    public function testCreatedAtReturnsConstructedTimestamp(): void
+    {
+        $widget = new Widget(1, 'Sensor', WidgetStatus::Active, '2026-01-01 00:00:00');
+
+        self::assertSame('2026-01-01 00:00:00', $widget->createdAt());
+    }
 }

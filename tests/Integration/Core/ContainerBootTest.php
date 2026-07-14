@@ -64,6 +64,23 @@ final class ContainerBootTest extends TestCase
         self::assertTrue($container->has(OptionalVendorHooks::class), 'OptionalVendorHooks discovered');
     }
 
+    public function testExposesBootstrapMetadata(): void
+    {
+        $projectRoot = dirname(__DIR__, 3);
+
+        $bootstrap = new AppBootstrap($projectRoot);
+
+        // The bootstrap declares itself as the WordPress platform seam.
+        self::assertSame('wordpress', $bootstrap->platform());
+
+        // The project root passed to the constructor is echoed back for the
+        // ServiceProvider scan.
+        self::assertSame($projectRoot, $bootstrap->getProjectRoot());
+
+        // No kernel options are contributed by this composition root.
+        self::assertSame([], $bootstrap->getOptions());
+    }
+
     private function context(): HostComponentContextInterface
     {
         return new class implements HostComponentContextInterface {

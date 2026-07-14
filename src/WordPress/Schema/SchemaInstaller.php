@@ -29,9 +29,14 @@ final class SchemaInstaller
             ->table(self::LOGICAL_TABLE)
         ;
 
+        // Defensive: WidgetSchema always carries #[Table(self::LOGICAL_TABLE)],
+        // so the descriptor is never null here. Kept as a guard against a future
+        // schema change; provably unreachable today, so excluded from coverage.
+        // @codeCoverageIgnoreStart
         if ($descriptor === null) {
             return;
         }
+        // @codeCoverageIgnoreEnd
 
         $descriptor['name'] = $connection->dialect()->table((string) $descriptor['name']);
 
