@@ -15,6 +15,11 @@
     "boilerplate",
     "middag"
   ],
+  "homepage": "https://github.com/middag-io/wp-plugin-middag-boilerplate",
+  "support": {
+    "issues": "https://github.com/middag-io/wp-plugin-middag-boilerplate/issues",
+    "source": "https://github.com/middag-io/wp-plugin-middag-boilerplate"
+  },
   "require": {
     "php": ">=8.2",
     "composer/installers": "^2.3",
@@ -55,6 +60,8 @@
     }
   },
   "scripts": {
+    "post-create-project-cmd": ["@php bin/init.php"],
+    "init-plugin": "@php bin/init.php",
     "check:style": "php-cs-fixer fix --dry-run --diff",
     "check:rector": "rector process --dry-run",
     "check:stan": "phpstan analyse --configuration=.phpstan.neon",
@@ -76,6 +83,6 @@
       "@test"
     ]
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true
 }

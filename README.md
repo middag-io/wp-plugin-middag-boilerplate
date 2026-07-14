@@ -12,6 +12,33 @@ native WordPress settings page.
 
 ---
 
+## Start a new plugin (`composer create-project`)
+
+The fastest path — Composer scaffolds the project and the initializer rebrands it:
+
+```bash
+composer create-project middag-io/wp-boilerplate my-plugin
+```
+
+After Composer installs the dependencies it runs `bin/init.php` automatically
+(`post-create-project-cmd`): it prompts for the plugin's identity, rewrites every
+token across the tree, renames the main file, normalizes code style, and then
+DELETES ITSELF so the new project carries no scaffolding residue. The OSS library
+dependencies are left intact — the generated plugin keeps consuming them.
+
+Cloned the repo or used GitHub's **Use this template** instead? Run the same
+initializer by hand:
+
+```bash
+composer install
+composer init-plugin       # same interactive rebrand; a no-op in non-interactive shells
+```
+
+The initializer is idempotent-safe and, in a non-TTY shell with no `--answers`,
+prints a notice and does nothing — so an unattended `composer install` never hangs.
+
+---
+
 ## Installation (fresh clone, no MIDDAG credentials)
 
 The OSS libraries resolve from the **public Packagist** — no `auth.json`, no Satis.
@@ -36,21 +63,32 @@ cd ui && npm run typecheck && npm run lint && npm run test
 
 ---
 
-## The one knob: the slug + the namespace
+## The identity knobs (what `bin/init.php` rewrites)
 
-Renaming the plugin = changing **two** identities. Everything else derives from them.
+Rebranding the plugin means changing **five** independent identities. `bin/init.php`
+does all of it; the table is the map of what changes if you ever do it by hand.
 
-| Knob | Value here | Derives |
-|---|---|---|
-| **slug** (`extra.installer-name` in `composer.json`) | `middag-boilerplate` | installed folder `wp-content/plugins/middag-boilerplate/`, text domain, React mount `id` (`middag-boilerplate-app`), REST namespace (`middag-boilerplate/v1`), asset names |
-| **PSR-4 namespace** | `Middag\WpBoilerplate\` → `src/` | every class |
+| Knob | Value here | Kind | Derives / appears in |
+|---|---|---|---|
+| **slug** (kebab) | `middag-boilerplate` | chosen | `extra.installer-name` → installed folder, text domain, main filename `<slug>.php`, REST namespace (`<slug>/v1`), React mount id (`<slug>-app`), `ui` package name, `.pot` target, and the const prefix `MIDDAG_BOILERPLATE` = `upper(slug)` |
+| **PSR-4 namespace** (PascalCase) | `Middag\WpBoilerplate\` → `src/` | chosen | every class; and the Vite IIFE global (`MiddagWpBoilerplate` = the namespace concatenated) |
+| **short prefix** (snake) | `mdgbp` | chosen (abbrev.) | table `mdgbp_widget`, CPT `mdgbp_note`, cron `mdgbp_sync`, capability `mdgbp_manage`, option keys, and the uninstall const `MDGBP_UNINSTALL_PURGE` = `upper(prefix)` |
+| **display name** | `MIDDAG Boilerplate` | chosen | Plugin header name, admin menu + page titles |
+| **Composer package** | `middag-io/wp-boilerplate` | chosen | `composer.json` name, release-please config |
 
-> The namespace is a **chosen PascalCase**, NOT derived from the kebab slug. `middag-boilerplate`
-> (slug) and `Middag\WpBoilerplate` (namespace) are independent — change both.
+> The namespace and the short prefix are **NOT derivable** from the slug — both are
+> free choices, which is why a naive find-and-replace on the slug alone leaves the
+> `mdgbp_*` table/option/cap tokens and the `MiddagWpBoilerplate` Vite global behind.
+> Use `bin/init.php`; it covers all five (plus the repo URL and optional author/description).
 
 The **repository** name (`wp-plugin-middag-boilerplate`) ≠ the **installed folder**
 (`middag-boilerplate`): the `wp-plugin-` prefix disambiguates the repo within the
 org, and `installer-name` governs the install path.
+
+> The OSS library identities (`middag-io/framework`, `middag-io/wordpress`,
+> `@middag-io/react`, and the `Middag\Framework\*` / `Middag\WordPress\*`
+> namespaces) are **distinct** from the boilerplate's own tokens and are never
+> rewritten — the generated plugin keeps depending on them.
 
 ---
 
