@@ -16,5 +16,5 @@ parameters:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
     # middag-io libs live under vendor/ and are fully typed — analyse against them.
     treatPhpDocTypesAsCertain: false
-    # No baseline: new code stays clean (contrast O5-MA-10, account's ~163KB baseline).
+    # No baseline: new code stays clean.
     reportUnmatchedIgnoredErrors: true

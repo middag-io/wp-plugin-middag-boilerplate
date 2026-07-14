@@ -14,8 +14,7 @@ import {
  * The library docs are explicit: IIFE/WordPress consumers must NOT call
  * registerDefaults() (it pulls the heavy/Pro blocks and defeats tree-shaking).
  * Instead register exactly the Community shell + block types this plugin uses,
- * plus the default cell/field/icon renderers the blocks depend on. Corrects the
- * account's registerDefaults() dump (O5-MA-04, "Rule 5").
+ * plus the default cell/field/icon renderers the blocks depend on.
  */
 export function registerUi(): void {
   registerShell('immersive', ImmersiveShell);

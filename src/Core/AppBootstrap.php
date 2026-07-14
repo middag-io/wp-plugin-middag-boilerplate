@@ -14,8 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * The plugin's composition root: it COMPOSES the WordPress adapter bootstrap
- * rather than reimplementing the platform seam (contrast the account's
- * AccountBootstrap, O5-MA-08).
+ * rather than reimplementing the platform seam (as an application plugin that
+ * owns the full stack would).
  *
  * {@see WpBootstrap} binds the platform contracts (wpdb connection, translator,
  * config, user context, ...); this class only adds what is plugin-specific:
