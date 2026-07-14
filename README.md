@@ -225,11 +225,35 @@ from the source string.
 
 ## Release
 
-`release-please` maintains `CHANGELOG.md` and the `MIDDAG_BOILERPLATE_VERSION`
-constant (annotated with `x-release-please-version`) from Conventional Commits.
-The `Version:` header in the main plugin file (read by WordPress) must be bumped
-along with it in the release PR — WordPress parses the header literally, so it
-does not carry the release-please annotation.
+`release-please` maintains `CHANGELOG.md` and the version from Conventional
+Commits, bumping two places in the main plugin file in the release PR:
+
+- `MIDDAG_BOILERPLATE_VERSION` — annotated inline with `// x-release-please-version`.
+- The WordPress `Version:` header — wrapped in `x-release-please-start-version`
+  / `x-release-please-end` block markers on their own lines.
+
+The header needs the block-marker form, not an inline comment. WordPress parses
+the header literally — `_cleanup_header_comment()` strips only a trailing `*/`
+or `?>`, never `//` — so an inline `// x-release-please-version` would corrupt
+the version to `1.2.3 // x-release-please-version` in the admin plugin list and
+update checks. `PluginHeaderTest` guards this: it parses the header exactly like
+WordPress and fails if it is not a clean semver matching the const.
+
+---
+
+## Roadmap
+
+- **WordPress.org publishing — for products, not this boilerplate.** The release
+  path a product plugin needs (release-please + the `Version:` / `readme.txt`
+  `Stable tag` bump mechanism above, a `readme.txt` in WordPress.org format, and
+  an SVN deploy step — e.g. `10up/action-wordpress-plugin-deploy` — with an
+  `assets/` dir for banner, icon and screenshots) is the pattern plugins
+  generated from this template inherit for their own WordPress.org submission.
+  This boilerplate stays installable (zip / `composer create-project`) as a live
+  demo of the MIDDAG framework, but it is **not** itself a directory candidate:
+  WordPress.org review rejects reference-architecture / framework plugins that
+  provide no standalone end-user value. Ship it as a demo; list the real
+  products.
 
 ---
 

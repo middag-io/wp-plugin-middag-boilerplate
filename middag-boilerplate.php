@@ -4,7 +4,9 @@
  * Plugin Name:       MIDDAG Boilerplate
  * Plugin URI:        https://github.com/middag-io/wp-plugin-middag-boilerplate
  * Description:       MIDDAG's reference architecture for a WordPress plugin — composes the OSS framework, WordPress adapter, and UI libraries end to end.
+ * x-release-please-start-version
  * Version:           0.1.0
+ * x-release-please-end
  * Requires at least: 6.5
  * Requires PHP:      8.2
  * Author:            MIDDAG
