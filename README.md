@@ -259,4 +259,10 @@ WordPress and fails if it is not a clean semver matching the const.
 
 ## License
 
-GPL-3.0-or-later.
+Apache-2.0: see [`LICENSE`](LICENSE). The same license is declared in the
+plugin header and in `composer.json`. Versions already distributed under
+GPL-3.0-or-later stay under it for those who received them.
+
+A plugin generated from this boilerplate sets its own license. Apache-2.0 is
+compatible with GPL-3.0 (not with GPL-2.0), so a plugin bound for the
+WordPress.org directory can be released under GPL-3.0-or-later.

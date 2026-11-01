@@ -1,7 +1,7 @@
 {
   "name": "middag-io/wp-boilerplate",
   "description": "MIDDAG's reference architecture for a WordPress plugin — composes the OSS framework/wordpress/ui libraries end to end.",
-  "license": "GPL-3.0-or-later",
+  "license": "Apache-2.0",
   "type": "wordpress-plugin",
   "authors": [
     {
