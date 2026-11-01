@@ -11,8 +11,8 @@
  * Requires PHP:      8.2
  * Author:            MIDDAG
  * Author URI:        https://middag.io
- * License:           GPL-3.0-or-later
- * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
+ * License:           Apache-2.0
+ * License URI:       https://www.apache.org/licenses/LICENSE-2.0
  * Text Domain:       middag-boilerplate
  * Domain Path:       /languages
  *
