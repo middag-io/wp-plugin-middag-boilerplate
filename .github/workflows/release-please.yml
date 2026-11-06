@@ -1,19 +1,32 @@
 name: release-please
 
+# release-please through the release-please component of middag-io/actions,
+# with the token of the release GitHub App (a Release PR opened by the App
+# triggers the pull request workflows; one opened with GITHUB_TOKEN does not).
+# It only opens or updates the Release PR; merging that PR creates the tag
+# and the GitHub Release.
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: googleapis/release-please-action@v5
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+    uses: middag-io/actions/.github/workflows/release-please.yml@c448e654322ecb3905afe697ad63ef6ae822bf94 # release-please-v1.0.0
+    # The component only checks out the configuration; every write uses the
+    # App token.
+    permissions:
+      contents: read
+    with:
+      config-file: release-please-config.json
+      manifest-file: .release-please-manifest.json
+      app-client-id: ${{ vars.GH_APPS_MIDDAG_CI_RELEASE_CLIENT_ID }}
+    secrets:
+      app-private-key: ${{ secrets.GH_APPS_MIDDAG_CI_RELEASE_PRIVATE_KEY }}
