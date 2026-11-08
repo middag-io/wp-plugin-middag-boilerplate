@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   release-please:
-    uses: middag-io/actions/.github/workflows/release-please.yml@c448e654322ecb3905afe697ad63ef6ae822bf94 # release-please-v1.0.0
+    uses: middag-io/actions/.github/workflows/release-please.yml@release-please-v1
     # The component only checks out the configuration; every write uses the
     # App token.
     permissions:
