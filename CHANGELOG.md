@@ -4,6 +4,14 @@ All notable changes are documented here. Versions follow [Semantic Versioning](h
 this file is maintained by [release-please](https://github.com/googleapis/release-please) from
 Conventional Commits.
 
+## [1.0.1](https://github.com/middag-io/wp-plugin-middag-boilerplate/compare/v1.0.0...v1.0.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **deps:** bump vitest to ^4.1.12 ([0996a90](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/0996a905112c1d8887f8d643b4255a71c30057b5))
+* **deps:** bump vitest to ^4.1.12 ([6a6517b](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/6a6517b07f423af9f62235a6618051f09031db19))
+
 ## [1.0.0](https://github.com/middag-io/wp-plugin-middag-boilerplate/compare/v0.1.0...v1.0.0) (2026-07-14)
 
 
