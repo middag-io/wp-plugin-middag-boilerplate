@@ -9,9 +9,7 @@ Conventional Commits.
 
 ### Bug Fixes
 
-* **deps:** bump vitest to ^4.1.12 ([0996a90](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/0996a905112c1d8887f8d643b4255a71c30057b5))
 * **deps:** bump vitest to ^4.1.12 ([6a6517b](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/6a6517b07f423af9f62235a6618051f09031db19))
-* **deps:** update vulnerable ui dev dependencies in lockfile ([47cbb21](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/47cbb21f40bdeea8065caaa1bb0168695330371a))
 * **deps:** update vulnerable ui dev dependencies in lockfile ([5c597b6](https://github.com/middag-io/wp-plugin-middag-boilerplate/commit/5c597b6e73421d6ee2672f98f69a2203b8737efa))
 
 ## [1.0.0](https://github.com/middag-io/wp-plugin-middag-boilerplate/compare/v0.1.0...v1.0.0) (2026-07-14)
